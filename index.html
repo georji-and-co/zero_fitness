@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZERO FITNESS — Personal Training Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:ital,wght@0,200;0,300;0,400;0,500;1,200;1,300&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────── */
+:root {
+  --ink:    #0a0908;
+  --ink2:   #121110;
+  --ink3:   #1a1917;
+  --ink4:   #242220;
+  --fog:    rgba(255,255,255,.055);
+  --fog2:   rgba(255,255,255,.1);
+  --white:  #f2ede8;
+  --dim:    rgba(242,237,232,.45);
+  --dimmer: rgba(242,237,232,.25);
+  --accent: #c8a96e;        /* warm gold — not neon */
+  --accent2:#b5933a;
+  --serif:  'Bebas Neue', sans-serif;
+  --mono:   'Inter Tight', sans-serif;
+  --jp:     'Noto Sans JP', sans-serif;
+  --ease:   cubic-bezier(.22,1,.36,1);
+  --ease2:  cubic-bezier(.16,1,.3,1);
+}
+/* ─── RESET ──────────────────────────── */
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { font-size:16px; scroll-behavior:smooth; overflow-x:hidden; }
+body {
+  background:var(--ink);
+  color:var(--white);
+  font-family:var(--jp);
+  font-weight:300;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  cursor:none;
+}
+a { text-decoration:none; color:inherit; }
+img { display:block; width:100%; }
+button { cursor:none; font-family:inherit; }
+
+/* ─── CUSTOM CURSOR ──────────────────── */
+#cursor {
+  position:fixed; z-index:9999; pointer-events:none;
+  width:8px; height:8px; border-radius:50%;
+  background:var(--accent);
+  transform:translate(-50%,-50%);
+  transition:width .3s var(--ease), height .3s var(--ease), opacity .3s;
+  mix-blend-mode:normal;
+}
+#cursor-ring {
+  position:fixed; z-index:9998; pointer-events:none;
+  width:36px; height:36px; border-radius:50%;
+  border:1px solid rgba(200,169,110,.4);
+  transform:translate(-50%,-50%);
+  transition:width .5s var(--ease), height .5s var(--ease), transform .12s var(--ease2), opacity .3s;
+}
+body:hover #cursor { opacity:1; }
+
+/* ─── GRAIN OVERLAY ──────────────────── */
+#grain {
+  position:fixed; inset:0; z-index:9000; pointer-events:none;
+  opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat:repeat;
+  background-size:160px 160px;
+  animation:grainShift 8s steps(10) infinite;
+}
+@keyframes grainShift {
+  0%,100%{transform:translate(0,0)}
+  10%{transform:translate(-2%,-3%)}
+  20%{transform:translate(3%,1%)}
+  30%{transform:translate(-1%,4%)}
+  40%{transform:translate(4%,-2%)}
+  50%{transform:translate(-3%,2%)}
+  60%{transform:translate(1%,-4%)}
+  70%{transform:translate(3%,3%)}
+  80%{transform:translate(-4%,1%)}
+  90%{transform:translate(2%,-1%)}
+}
+
+/* ─── NAV ────────────────────────────── */
+#nav {
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  padding:0 40px;
+  height:64px;
+  display:flex; align-items:center; justify-content:space-between;
+  transition:background .6s var(--ease), border-color .6s;
+  border-bottom:1px solid transparent;
+}
+#nav.scrolled {
+  background:rgba(10,9,8,.92);
+  border-color:var(--fog);
+  backdrop-filter:blur(20px) saturate(1.2);
+}
+.nav-wordmark {
+  font-family:var(--serif);
+  font-size:18px;
+  letter-spacing:.12em;
+  color:var(--white);
+}
+.nav-wordmark span { color:var(--accent); }
+.nav-right { display:flex; align-items:center; gap:32px; }
+.nav-links { display:flex; gap:28px; }
+.nav-link {
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:300;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--dim);
+  transition:color .3s;
+}
+.nav-link:hover { color:var(--white); }
+.nav-cta {
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink);
+  background:var(--accent);
+  border:none;
+  padding:10px 22px;
+  transition:background .3s, opacity .3s;
+}
+.nav-cta:hover { background:var(--accent2); }
+
+/* ─── HERO ───────────────────────────── */
+#hero {
+  position:relative;
+  height:100dvh; min-height:600px;
+  display:grid;
+  place-items:end start;
+  overflow:hidden;
+}
+
+/* Cinematic background */
+.hero-bg {
+  position:absolute; inset:0;
+  background:
+    linear-gradient(160deg, rgba(10,9,8,0) 0%, rgba(10,9,8,.85) 100%),
+    linear-gradient(to top, rgba(10,9,8,1) 0%, rgba(10,9,8,.4) 35%, rgba(10,9,8,.1) 100%);
+  z-index:1;
+}
+
+/* Replaced by a deep photographic atmosphere using CSS */
+.hero-visual {
+  position:absolute; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 40%, rgba(45,35,20,.8) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(20,15,8,.9) 0%, transparent 60%),
+    linear-gradient(135deg, #0a0908 0%, #1a1510 40%, #0f0c08 100%);
+  overflow:hidden;
+}
+
+/* Photographic placeholder frame */
+.hero-photo-area {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:flex-end;
+}
+.hero-photo-frame {
+  position:absolute;
+  right:0; top:0; bottom:0;
+  width:65%;
+  overflow:hidden;
+}
+.hero-photo-inner {
+  width:100%; height:100%;
+  background:
+    linear-gradient(to bottom, rgba(10,9,8,.3) 0%, transparent 30%, transparent 70%, rgba(10,9,8,.8) 100%),
+    linear-gradient(to left, transparent 60%, rgba(10,9,8,.9) 100%);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:10px;
+}
+.photo-hint {
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.photo-hint-line {
+  width:1px; height:60px;
+  background:linear-gradient(to bottom, transparent, var(--accent), transparent);
+}
+.photo-hint-text {
+  font-family:var(--mono);
+  font-size:9px; letter-spacing:.2em; color:rgba(200,169,110,.35);
+  text-transform:uppercase; writing-mode:vertical-rl;
+}
+
+/* Atmosphere shapes */
+.atmo {
+  position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none;
+}
+.atmo-1 {
+  width:500px; height:500px;
+  background:rgba(200,169,110,.06);
+  top:-10%; right:10%;
+  animation:atmoFloat 18s ease-in-out infinite;
+}
+.atmo-2 {
+  width:300px; height:300px;
+  background:rgba(200,169,110,.04);
+  bottom:10%; right:30%;
+  animation:atmoFloat 24s ease-in-out infinite reverse;
+}
+@keyframes atmoFloat {
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(20px,-30px) scale(1.05)}
+}
+
+.hero-content {
+  position:relative; z-index:2;
+  padding:0 40px 64px;
+  max-width:700px;
+}
+
+.hero-eyebrow {
+  font-family:var(--mono);
+  font-size:10px; font-weight:300;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:28px;
+  display:flex; align-items:center; gap:14px;
+  opacity:0; animation:heroReveal .8s .2s var(--ease) forwards;
+}
+.hero-eyebrow::before {
+  content:'';
+  display:block; width:28px; height:1px;
+  background:var(--accent);
+}
+
+.hero-h1 {
+  font-family:var(--serif);
+  font-size:clamp(68px, 12vw, 120px);
+  line-height:.88;
+  letter-spacing:.02em;
+  margin-bottom:36px;
+  overflow:hidden;
+}
+.hero-h1-line {
+  display:block;
+  opacity:0;
+  transform:translateY(100%);
+  animation:lineReveal .9s var(--ease) forwards;
+}
+.hero-h1-line:nth-child(1) { animation-delay:.4s }
+.hero-h1-line:nth-child(2) { animation-delay:.55s }
+.hero-h1-line:nth-child(3) { animation-delay:.7s; color:var(--accent); }
+
+.hero-sub {
+  font-family:var(--jp);
+  font-size:13px; font-weight:300;
+  line-height:2.2; color:var(--dim);
+  max-width:340px;
+  margin-bottom:48px;
+  opacity:0; animation:heroReveal .8s .9s var(--ease) forwards;
+}
+
+.hero-actions {
+  display:flex; flex-direction:column; gap:12px;
+  opacity:0; animation:heroReveal .8s 1.1s var(--ease) forwards;
+}
+.btn-primary {
+  display:inline-flex; align-items:center; gap:12px;
+  font-family:var(--mono); font-size:11px; font-weight:400;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink);
+  background:var(--white);
+  border:none; padding:17px 32px;
+  transition:background .3s, gap .3s var(--ease);
+  width:fit-content;
+}
+.btn-primary:hover { background:var(--accent); gap:20px; }
+.btn-primary svg { width:16px; transition:transform .3s var(--ease); }
+.btn-primary:hover svg { transform:translateX(4px); }
+.btn-secondary {
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--mono); font-size:11px; font-weight:300;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:var(--dimmer);
+  border:none; background:none; padding:0;
+  transition:color .3s, gap .3s var(--ease);
+  width:fit-content;
+}
+.btn-secondary:hover { color:var(--white); gap:16px; }
+.btn-secondary::before {
+  content:''; display:block; width:20px; height:1px;
+  background:currentColor;
+  transition:width .3s var(--ease);
+}
+.btn-secondary:hover::before { width:30px; }
+
+/* Scroll indicator */
+.hero-scroll {
+  position:absolute; bottom:36px; right:40px; z-index:2;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  opacity:0; animation:heroReveal .8s 1.4s var(--ease) forwards;
+}
+.scroll-track {
+  width:1px; height:52px;
+  background:var(--fog2);
+  position:relative; overflow:hidden;
+}
+.scroll-fill {
+  position:absolute; top:-100%; left:0; right:0;
+  background:var(--accent);
+  height:100%;
+  animation:scrollDrop 2s ease-in-out infinite;
+}
+@keyframes scrollDrop { 0%{top:-100%} 100%{top:100%} }
+.scroll-label {
+  font-family:var(--mono); font-size:8px; font-weight:300;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--dimmer);
+  writing-mode:vertical-rl;
+}
+
+/* ─── MARQUEE ────────────────────────── */
+.marquee-wrap {
+  overflow:hidden;
+  border-top:1px solid var(--fog);
+  border-bottom:1px solid var(--fog);
+  background:var(--ink2);
+}
+.marquee-track {
+  display:flex; gap:0;
+  animation:marqueeScroll 22s linear infinite;
+  white-space:nowrap;
+}
+.marquee-item {
+  padding:18px 40px;
+  font-family:var(--mono); font-size:11px; font-weight:300;
+  letter-spacing:.18em; text-transform:uppercase;
+  color:var(--dimmer);
+  border-right:1px solid var(--fog);
+  flex-shrink:0;
+  transition:color .3s;
+}
+.marquee-item.accent { color:var(--accent); }
+@keyframes marqueeScroll {
+  0%{transform:translateX(0)} 100%{transform:translateX(-50%)}
+}
+
+/* ─── METRICS ────────────────────────── */
+#metrics {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  border-bottom:1px solid var(--fog);
+}
+.metric-cell {
+  padding:52px 40px;
+  border-right:1px solid var(--fog);
+  position:relative; overflow:hidden;
+}
+.metric-cell:last-child { border-right:none; }
+.metric-cell::after {
+  content:'';
+  position:absolute; bottom:0; left:40px; right:40px;
+  height:1px; background:var(--accent);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .6s var(--ease);
+}
+.metric-cell:hover::after { transform:scaleX(1); }
+.metric-num {
+  font-family:var(--serif);
+  font-size:clamp(52px,6vw,72px);
+  line-height:1;
+  color:var(--white);
+  margin-bottom:10px;
+}
+.metric-num sup { font-size:.4em; vertical-align:super; color:var(--accent); }
+.metric-label {
+  font-family:var(--mono); font-size:10px; font-weight:300;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--dim);
+  margin-bottom:6px;
+}
+.metric-sub {
+  font-family:var(--jp); font-size:12px; font-weight:300; color:var(--dimmer);
+  line-height:1.8;
+}
+
+/* ─── PHILOSOPHY ─────────────────────── */
+#philosophy {
+  padding:120px 40px;
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:80px; align-items:center;
+}
+.phil-label {
+  font-family:var(--mono); font-size:10px; font-weight:300;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--accent);
+  margin-bottom:28px;
+  display:flex; align-items:center; gap:14px;
+}
+.phil-label::before { content:''; width:28px; height:1px; background:var(--accent); display:block; }
+.phil-h2 {
+  font-family:var(--serif);
+  font-size:clamp(44px,5vw,64px);
+  line-height:.95; letter-spacing:.02em;
+  margin-bottom:36px;
+}
+.phil-body {
+  font-family:var(--jp); font-size:14px; font-weight:300;
+  line-height:2.4; color:var(--dim);
+  max-width:420px;
+}
+.phil-body p + p { margin-top:20px; }
+
+/* Visual panel */
+.phil-visual {
+  position:relative; aspect-ratio:4/5;
+  background:var(--ink3);
+  overflow:hidden;
+}
+.phil-visual-inner {
+  position:absolute; inset:0;
+  background:
+    linear-gradient(135deg, rgba(200,169,110,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 70% at 60% 40%, rgba(200,169,110,.06) 0%, transparent 70%),
+    var(--ink3);
+  display:flex; align-items:center; justify-content:center;
+}
+.visual-placeholder {
+  display:flex; flex-direction:column; align-items:center; gap:16px;
+}
+.vp-icon { width:48px; height:48px; }
+.vp-text {
+  font-family:var(--mono); font-size:9px; letter-spacing:.2em;
+  color:rgba(200,169,110,.3); text-transform:uppercase; text-align:center;
+}
+.phil-visual-accent {
+  position:absolute; bottom:0; left:0; right:0;
+  height:2px; background:var(--accent);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .8s var(--ease);
+}
+.phil-visual:hover .phil-visual-accent { transform:scaleX(1); }
+.phil-caption {
+  position:absolute; bottom:24px; right:24px;
+  font-family:var(--mono); font-size:9px; font-weight:300;
+  letter-spacing:.16em; color:var(--dimmer); text-transform:uppercase;
+}
+
+/* ─── PROGRAMS ───────────────────────── */
+#programs { padding:0 0 120px; }
+.section-header {
+  padding:80px 40px 48px;
+  display:flex; justify-content:space-between; align-items:flex-end;
+}
+.section-label {
+  font-family:var(--mono); font-size:10px; font-weight:300;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--accent);
+  margin-bottom:16px;
+  display:flex; align-items:center; gap:12px;
+}
+.section-label::before { content:''; width:24px; height:1px; background:var(--accent); display:block; }
+.section-title {
+  font-family:var(--serif);
+  font-size:clamp(40px,4.5vw,58px);
+  line-height:.95;
+}
+.section-link {
+  font-family:var(--mono); font-size:10px; font-weight:300;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--dim);
+  display:flex; align-items:center; gap:10px;
+  transition:color .3s, gap .3s var(--ease);
+  padding-bottom:4px;
+  border-bottom:1px solid var(--fog2);
+}
+.section-link:hover { color:var(--white); gap:16px; }
+
+/* Program rows */
+.program-table {
+  border-top:1px solid var(--fog);
+}
+.prog-row {
+  display:grid;
+  grid-template-columns:64px 1fr auto;
+  align-items:center;
+  gap:40px;
+  padding:40px;
+  border-bottom:1px solid var(--fog);
+  transition:background .4s var(--ease);
+  position:relative; overflow:hidden;
+  cursor:none;
+}
+.prog-row::before {
+  content:'';
+  position:absolute; left:0; top:0; bottom:0;
+  width:0;
+  background:var(--fog);
+  transition:width .5s var(--ease);
+}
+.prog-row:hover::before { width:100%; }
+.prog-row:hover { background:var(--ink2); }
+.prog-index {
+  font-family:var(--serif);
+  font-size:40px; line-height:1;
+  color:rgba(200,169,110,.2);
+  position:relative; z-index:1;
+  transition:color .3s;
+}
+.prog-row:hover .prog-index { color:rgba(200,169,110,.5); }
+.prog-main { position:relative; z-index:1; }
+.prog-name {
+  font-family:var(--mono); font-size:18px; font-weight:400;
+  letter-spacing:.06em; text-transform:uppercase;
+  color:var(--white);
+  margin-bottom:8px;
+}
+.prog-desc {
+  font-family:var(--jp); font-size:13px; font-weight:300;
+  color:var(--dim); line-height:1.8;
+}
+.prog-tags {
+  display:flex; gap:8px; margin-top:10px;
+  flex-wrap:wrap;
+}
+.prog-tag {
+  font-family:var(--mono); font-size:9px; font-weight:300;
+  letter-spacing:.12em; text-transform:uppercase;
+  color:var(--dimmer);
+  border:1px solid var(--fog2);
+  padding:4px 10px;
+}
+.prog-arrow {
+  position:relative; z-index:1;
+  width:44px; height:44px;
+  border:1px solid var(--fog2);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  transition:border-color .3s, background .3s;
+  flex-shrink:0;
+}
+.prog-row:hover .prog-arrow {
+  border-color:var(--accent);
+  background:var(--accent);
+}
+.prog-arrow svg {
+  width:16px; stroke:var(--dim);
+  transition:stroke .3s, transform .3s var(--ease);
+}
+.prog-row:hover .prog-arrow svg { stroke:var(--ink); transform:translateX(2px); }
+
+/* ─── TRAINER ────────────────────────── */
+#trainer {
+  padding:120px 0;
+  border-top:1px solid var(--fog);
+}
+.trainer-header { padding:0 40px 64px; }
+.trainer-layout {
+  display:grid; grid-template-columns:1fr 1fr;
+}
+.trainer-portrait {
+  position:relative;
+  aspect-ratio:3/4;
+  background:var(--ink3);
+  overflow:hidden;
+}
+.trainer-portrait-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 60% 80% at 50% 30%, rgba(200,169,110,.07) 0%, transparent 70%),
+    var(--ink3);
+  display:flex; align-items:center; justify-content:center;
+}
+.portrait-placeholder {
+  display:flex; flex-direction:column; align-items:center; gap:16px;
+  opacity:.5;
+}
+.portrait-placeholder svg { stroke:var(--accent); fill:none; stroke-width:1; }
+.portrait-placeholder span {
+  font-family:var(--mono); font-size:9px; letter-spacing:.2em;
+  color:var(--accent); text-transform:uppercase;
+}
+.portrait-overlay {
+  position:absolute; bottom:0; left:0; right:0;
+  background:linear-gradient(transparent, rgba(10,9,8,.9));
+  padding:48px 36px 36px;
+}
+.portrait-name {
+  font-family:var(--serif); font-size:44px; line-height:1;
+  letter-spacing:.02em; margin-bottom:8px;
+}
+.portrait-title {
+  font-family:var(--mono); font-size:10px; font-weight:300;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--accent);
+}
+
+.trainer-story {
+  padding:64px;
+  display:flex; flex-direction:column; justify-content:center;
+  background:var(--ink2);
+}
+.trainer-quote {
+  font-family:'Inter Tight', sans-serif;
+  font-size:clamp(20px,2.5vw,28px);
+  font-weight:200; font-style:italic;
+  line-height:1.5; color:var(--white);
+  border-left:2px solid var(--accent);
+  padding-left:28px;
+  margin-bottom:40px;
+}
+.trainer-body {
+  font-family:var(--jp); font-size:13px; font-weight:300;
+  line-height:2.4; color:var(--dim);
+  margin-bottom:40px;
+}
+.trainer-body p + p { margin-top:16px; }
+.trainer-creds {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:1px; background:var(--fog);
+  border:1px solid var(--fog);
+  margin-top:auto;
+}
+.cred-cell {
+  background:var(--ink3); padding:20px 22px;
+}
+.cred-label {
+  font-family:var(--mono); font-size:8px; font-weight:300;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--accent);
+  margin-bottom:6px;
+}
+.cred-val {
+  font-family:var(--mono); font-size:13px; font-weight:400; color:var(--white);
+}
+
+/* ─── TRANSFORMATIONS ────────────────── */
+#transformations { padding:120px 40px; border-top:1px solid var(--fog); }
+.trans-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:var(--fog);
+  border:1px solid var(--fog);
+  margin-top:48px;
+}
+.trans-card {
+  background:var(--ink2);
+  padding:36px 28px;
+  position:relative; overflow:hidden;
+  transition:background .4s;
+}
+.trans-card:hover { background:var(--ink3); }
+.trans-card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0;
+  height:2px; background:var(--accent);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .5s var(--ease);
+}
+.trans-card:hover::before { transform:scaleX(1); }
+.trans-avatar {
+  width:56px; height:56px; border-radius:50%;
+  background:var(--ink3); border:1px solid var(--fog2);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:20px;
+}
+.trans-avatar svg { stroke:var(--dimmer); fill:none; stroke-width:1; }
+.trans-name {
+  font-family:var(--mono); font-size:12px; font-weight:400;
+  letter-spacing:.08em; margin-bottom:4px;
+}
+.trans-period {
+  font-family:var(--mono); font-size:9px; font-weight:300;
+  letter-spacing:.12em; color:var(--accent);
+  text-transform:uppercase; margin-bottom:20px;
+}
+.trans-data {
+  display:flex; flex-direction:column; gap:8px; margin-bottom:20px;
+}
+.trans-datum {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 0;
+  border-bottom:1px solid var(--fog);
+}
+.trans-datum:last-child { border-bottom:none; }
+.datum-key {
+  font-family:var(--jp); font-size:12px; font-weight:300; color:var(--dim);
+}
+.datum-val {
+  font-family:var(--mono); font-size:13px; font-weight:400; color:var(--white);
+}
+.trans-quote {
+  font-family:var(--jp); font-size:12px; font-weight:300;
+  line-height:2; color:var(--dimmer); font-style:italic;
+}
+
+/* ─── BOOKING ────────────────────────── */
+#booking {
+  padding:120px 40px;
+  border-top:1px solid var(--fog);
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:80px;
+}
+.booking-left { }
+.booking-title { font-family:var(--serif); font-size:clamp(44px,5vw,64px); line-height:.95; margin-bottom:24px; }
+.booking-lead { font-family:var(--jp); font-size:13px; font-weight:300; line-height:2.4; color:var(--dim); margin-bottom:40px; }
+.booking-trust {
+  display:flex; flex-direction:column; gap:14px;
+}
+.trust-item {
+  display:flex; align-items:center; gap:14px;
+  font-family:var(--jp); font-size:12px; font-weight:300; color:var(--dim);
+}
+.trust-dot {
+  width:4px; height:4px; border-radius:50%;
+  background:var(--accent); flex-shrink:0;
+}
+
+/* Step form */
+.booking-form {
+  background:var(--ink2);
+  border:1px solid var(--fog);
+  border-top:2px solid var(--accent);
+  padding:48px 40px;
+}
+.form-step { display:none; }
+.form-step.active { display:block; }
+.step-counter {
+  font-family:var(--mono); font-size:9px; font-weight:300;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--accent);
+  margin-bottom:12px;
+}
+.step-q {
+  font-family:var(--serif); font-size:30px; line-height:1.1;
+  margin-bottom:32px;
+}
+.step-options { display:flex; flex-direction:column; gap:8px; }
+.step-option {
+  display:flex; align-items:center; gap:16px;
+  padding:16px 20px;
+  border:1px solid var(--fog);
+  transition:border-color .25s, background .25s;
+  cursor:none;
+}
+.step-option:hover { border-color:var(--fog2); background:var(--ink3); }
+.step-option.chosen { border-color:var(--accent); background:rgba(200,169,110,.05); }
+.opt-radio {
+  width:16px; height:16px; border-radius:50%;
+  border:1.5px solid var(--dim); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  transition:border-color .2s;
+}
+.step-option.chosen .opt-radio { border-color:var(--accent); }
+.opt-radio::after {
+  content:''; width:8px; height:8px; border-radius:50%;
+  background:var(--accent);
+  transform:scale(0); transition:transform .2s var(--ease);
+}
+.step-option.chosen .opt-radio::after { transform:scale(1); }
+.opt-text { font-family:var(--jp); font-size:13px; font-weight:300; color:var(--white); }
+.opt-sub { font-family:var(--jp); font-size:11px; font-weight:300; color:var(--dimmer); margin-top:2px; }
+
+.form-field {
+  display:flex; flex-direction:column; gap:8px; margin-bottom:16px;
+}
+.field-label {
+  font-family:var(--mono); font-size:9px; font-weight:300;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--dim);
+}
+.field-input {
+  background:transparent; border:none; border-bottom:1px solid var(--fog2);
+  color:var(--white); padding:12px 0;
+  font-family:var(--jp); font-size:14px; font-weight:300;
+  outline:none; width:100%;
+  transition:border-color .3s;
+}
+.field-input::placeholder { color:var(--dimmer); }
+.field-input:focus { border-color:var(--accent); }
+.form-note {
+  font-family:var(--jp); font-size:11px; font-weight:300;
+  color:var(--dimmer); line-height:1.8; margin-top:16px;
+}
+
+.form-nav { display:flex; gap:12px; margin-top:32px; }
+.form-next {
+  flex:1; background:var(--accent); color:var(--ink);
+  border:none; padding:16px;
+  font-family:var(--mono); font-size:11px; font-weight:400;
+  letter-spacing:.14em; text-transform:uppercase;
+  transition:background .3s;
+}
+.form-next:hover { background:var(--accent2); }
+.form-next.final { background:var(--white); }
+.form-next.final:hover { background:var(--accent); }
+.form-back {
+  background:transparent; color:var(--dimmer);
+  border:1px solid var(--fog);
+  padding:16px 20px;
+  font-family:var(--mono); font-size:10px; font-weight:300;
+  letter-spacing:.12em; text-transform:uppercase;
+  transition:all .3s;
+}
+.form-back:hover { border-color:var(--fog2); color:var(--dim); }
+
+.form-progress { display:flex; gap:4px; margin-bottom:32px; }
+.fp { height:2px; flex:1; background:var(--fog); transition:background .4s; }
+.fp.done { background:var(--accent); }
+
+.form-success { display:none; text-align:center; padding:20px 0; }
+.form-success.show { display:block; }
+.success-icon {
+  font-family:var(--serif); font-size:80px; color:var(--accent); line-height:1;
+  margin-bottom:16px;
+}
+.success-title {
+  font-family:var(--serif); font-size:36px; margin-bottom:12px;
+}
+.success-body { font-family:var(--jp); font-size:13px; font-weight:300; color:var(--dim); line-height:2.2; }
+
+/* ─── PRICING ────────────────────────── */
+#pricing { padding:120px 40px; border-top:1px solid var(--fog); }
+.price-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:var(--fog);
+  border:1px solid var(--fog);
+  margin-top:48px;
+}
+.price-col {
+  background:var(--ink2); padding:48px 36px;
+  display:flex; flex-direction:column;
+  position:relative; overflow:hidden;
+  transition:background .4s;
+}
+.price-col:hover { background:var(--ink3); }
+.price-col.featured {
+  background:var(--ink3);
+  border-top:2px solid var(--accent);
+}
+.price-featured-label {
+  font-family:var(--mono); font-size:8px; font-weight:300;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--accent);
+  margin-bottom:16px;
+}
+.price-plan {
+  font-family:var(--mono); font-size:13px; font-weight:400;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--white);
+  margin-bottom:8px;
+}
+.price-desc {
+  font-family:var(--jp); font-size:12px; font-weight:300;
+  color:var(--dim); line-height:1.8; margin-bottom:28px;
+  min-height:60px;
+}
+.price-amount {
+  font-family:var(--serif); font-size:52px; line-height:1;
+  color:var(--white); margin-bottom:6px;
+}
+.price-period {
+  font-family:var(--mono); font-size:10px; font-weight:300;
+  letter-spacing:.12em; color:var(--dimmer);
+  margin-bottom:32px; padding-bottom:32px;
+  border-bottom:1px solid var(--fog);
+}
+.price-features { list-style:none; flex:1; display:flex; flex-direction:column; gap:12px; margin-bottom:32px; }
+.price-feature {
+  display:flex; align-items:flex-start; gap:12px;
+  font-family:var(--jp); font-size:12px; font-weight:300; color:var(--dim);
+  line-height:1.7;
+}
+.feature-dot {
+  width:4px; height:4px; border-radius:50%;
+  background:var(--accent); flex-shrink:0; margin-top:7px;
+}
+.price-cta {
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:10px; font-weight:400;
+  letter-spacing:.14em; text-transform:uppercase;
+  padding:14px 24px;
+  border:1px solid var(--fog2); color:var(--dim);
+  background:transparent;
+  transition:all .3s;
+  width:100%;
+}
+.price-cta:hover { border-color:var(--accent); color:var(--accent); }
+.price-col.featured .price-cta {
+  background:var(--accent); color:var(--ink);
+  border-color:var(--accent);
+}
+.price-col.featured .price-cta:hover { background:var(--accent2); border-color:var(--accent2); }
+
+/* ─── FAQ ────────────────────────────── */
+#faq { padding:120px 40px; border-top:1px solid var(--fog); }
+.faq-layout { display:grid; grid-template-columns:1fr 2fr; gap:80px; margin-top:48px; }
+.faq-intro {
+  font-family:var(--jp); font-size:13px; font-weight:300;
+  color:var(--dim); line-height:2.4;
+}
+.faq-list { display:flex; flex-direction:column; }
+.faq-item { border-bottom:1px solid var(--fog); }
+.faq-trigger {
+  width:100%; display:flex; justify-content:space-between; align-items:center;
+  padding:28px 0; background:none; border:none; color:var(--white);
+  cursor:none; text-align:left; gap:24px;
+  transition:color .3s;
+}
+.faq-trigger:hover { color:var(--accent); }
+.faq-q { font-family:var(--jp); font-size:14px; font-weight:400; flex:1; }
+.faq-icon {
+  width:24px; height:24px; border-radius:50%;
+  border:1px solid var(--fog2); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:16px; color:var(--dim); font-weight:200;
+  transition:all .3s var(--ease);
+}
+.faq-item.open .faq-icon { border-color:var(--accent); color:var(--accent); transform:rotate(45deg); }
+.faq-answer {
+  max-height:0; overflow:hidden;
+  transition:max-height .5s var(--ease), padding .3s;
+}
+.faq-item.open .faq-answer { max-height:300px; }
+.faq-a-inner {
+  font-family:var(--jp); font-size:13px; font-weight:300;
+  color:var(--dim); line-height:2.4; padding-bottom:28px;
+}
+
+/* ─── ACCESS ─────────────────────────── */
+#access { padding:120px 40px; border-top:1px solid var(--fog); }
+.access-layout { display:grid; grid-template-columns:1fr 1fr; gap:64px; margin-top:48px; }
+.access-info { display:flex; flex-direction:column; gap:32px; }
+.access-row { display:flex; flex-direction:column; gap:8px; }
+.access-label {
+  font-family:var(--mono); font-size:9px; font-weight:300;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--accent);
+}
+.access-val { font-family:var(--jp); font-size:14px; font-weight:300; color:var(--white); line-height:1.9; }
+.access-val a { color:var(--accent); }
+.access-map {
+  background:var(--ink2); border:1px solid var(--fog);
+  display:flex; align-items:center; justify-content:center;
+  aspect-ratio:16/10; flex-direction:column; gap:10px;
+}
+.access-map svg { stroke:rgba(200,169,110,.3); fill:none; }
+.access-map p {
+  font-family:var(--mono); font-size:9px; font-weight:300;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--dimmer);
+}
+
+/* ─── FINAL CTA ──────────────────────── */
+#finale {
+  padding:160px 40px;
+  border-top:1px solid var(--fog);
+  text-align:center;
+  position:relative; overflow:hidden;
+}
+.finale-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 60% 60% at 50% 50%, rgba(200,169,110,.06) 0%, transparent 70%),
+    var(--ink);
+}
+.finale-content { position:relative; z-index:1; }
+.finale-eyebrow {
+  font-family:var(--mono); font-size:10px; font-weight:300;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--accent);
+  margin-bottom:32px;
+  display:flex; align-items:center; justify-content:center; gap:14px;
+}
+.finale-eyebrow::before,.finale-eyebrow::after {
+  content:''; display:block; width:40px; height:1px; background:var(--accent);
+}
+.finale-h {
+  font-family:var(--serif);
+  font-size:clamp(56px,8vw,100px);
+  line-height:.9; letter-spacing:.02em;
+  margin-bottom:32px;
+}
+.finale-h .accent { color:var(--accent); }
+.finale-sub {
+  font-family:var(--jp); font-size:14px; font-weight:300;
+  color:var(--dim); line-height:2.4; max-width:380px; margin:0 auto 56px;
+}
+.finale-actions { display:flex; gap:16px; justify-content:center; }
+
+/* ─── FOOTER ─────────────────────────── */
+footer {
+  border-top:1px solid var(--fog);
+  padding:48px 40px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.footer-logo { font-family:var(--serif); font-size:16px; letter-spacing:.1em; }
+.footer-logo span { color:var(--accent); }
+.footer-copy {
+  font-family:var(--mono); font-size:9px; font-weight:300;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--dimmer);
+}
+
+/* ─── STICKY BAR ─────────────────────── */
+#sticky {
+  position:fixed; bottom:0; left:0; right:0; z-index:400;
+  background:rgba(10,9,8,.96);
+  border-top:1px solid var(--fog);
+  backdrop-filter:blur(20px);
+  padding:16px 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  transform:translateY(100%);
+  transition:transform .5s var(--ease);
+}
+#sticky.show { transform:translateY(0); }
+.sticky-text { }
+.sticky-title {
+  font-family:var(--mono); font-size:13px; font-weight:400;
+  letter-spacing:.04em; color:var(--white);
+}
+.sticky-sub {
+  font-family:var(--mono); font-size:9px; font-weight:300;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--accent);
+  margin-top:3px;
+}
+.sticky-btn {
+  font-family:var(--mono); font-size:11px; font-weight:400;
+  letter-spacing:.14em; text-transform:uppercase;
+  background:var(--accent); color:var(--ink); border:none;
+  padding:13px 28px; transition:background .3s;
+  flex-shrink:0;
+}
+.sticky-btn:hover { background:var(--accent2); }
+
+/* ─── ANIMATIONS ─────────────────────── */
+@keyframes heroReveal {
+  from { opacity:0; transform:translateY(16px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@keyframes lineReveal {
+  from { opacity:0; transform:translateY(100%); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.reveal {
+  opacity:0; transform:translateY(28px);
+  transition:opacity .9s var(--ease), transform .9s var(--ease);
+}
+.reveal.in { opacity:1; transform:translateY(0); }
+.reveal-l { opacity:0; transform:translateX(-28px); transition:opacity .9s var(--ease), transform .9s var(--ease); }
+.reveal-l.in { opacity:1; transform:translateX(0); }
+.reveal-r { opacity:0; transform:translateX(28px); transition:opacity .9s var(--ease), transform .9s var(--ease); }
+.reveal-r.in { opacity:1; transform:translateX(0); }
+.d1 { transition-delay:.1s } .d2 { transition-delay:.2s } .d3 { transition-delay:.3s }
+.d4 { transition-delay:.4s } .d5 { transition-delay:.5s }
+
+/* ─── MOBILE ─────────────────────────── */
+@media(max-width:768px){
+  body { cursor:auto; }
+  #cursor,#cursor-ring { display:none; }
+  #nav { padding:0 20px; }
+  .nav-links { display:none; }
+  #hero .hero-content { padding:0 20px 56px; }
+  #hero .hero-photo-frame { width:0; }
+  #metrics { grid-template-columns:1fr 1fr; }
+  .metric-cell:nth-child(3) { grid-column:span 2; border-right:none; }
+  #philosophy { grid-template-columns:1fr; gap:40px; padding:72px 20px; }
+  .phil-visual { display:none; }
+  .section-header { padding:64px 20px 36px; flex-direction:column; align-items:flex-start; gap:12px; }
+  .prog-row { grid-template-columns:1fr; gap:16px; padding:28px 20px; }
+  .prog-index { font-size:28px; }
+  #trainer { padding:72px 0; }
+  .trainer-header { padding:0 20px 40px; }
+  .trainer-layout { grid-template-columns:1fr; }
+  .trainer-story { padding:36px 20px; }
+  #transformations { padding:72px 20px; }
+  .trans-grid { grid-template-columns:1fr; }
+  #booking { grid-template-columns:1fr; gap:40px; padding:72px 20px; }
+  .booking-form { padding:28px 20px; }
+  #pricing { padding:72px 20px; }
+  .price-grid { grid-template-columns:1fr; }
+  #faq { padding:72px 20px; }
+  .faq-layout { grid-template-columns:1fr; gap:32px; }
+  #access { padding:72px 20px; }
+  .access-layout { grid-template-columns:1fr; }
+  #finale { padding:100px 20px; }
+  .finale-actions { flex-direction:column; align-items:center; }
+  footer { padding:32px 20px; flex-direction:column; gap:12px; text-align:center; }
+  #sticky { padding:14px 20px; }
+  .trainer-creds { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="grain" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"></div>
+<div id="cursor-ring" aria-hidden="true"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-wordmark">ZERO<span> FITNESS</span></a>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a class="nav-link" href="#programs">プログラム</a>
+      <a class="nav-link" href="#trainer">トレーナー</a>
+      <a class="nav-link" href="#pricing">料金</a>
+      <a class="nav-link" href="#access">アクセス</a>
+    </div>
+    <button class="nav-cta" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">体験予約</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-visual">
+    <div class="atmo atmo-1"></div>
+    <div class="atmo atmo-2"></div>
+    <div class="hero-photo-area">
+      <div class="hero-photo-frame">
+        <div class="hero-photo-inner">
+          <!-- ↓ ここに高品質なトレーニング写真が入ります -->
+          <div class="photo-hint">
+            <div class="photo-hint-line"></div>
+            <div class="photo-hint-text">Photo — Trainer in Studio</div>
+            <div class="photo-hint-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Personal Training Studio</div>
+    <h1 class="hero-h1">
+      <span class="hero-h1-line">身体を</span>
+      <span class="hero-h1-line">変える。</span>
+      <span class="hero-h1-line">人生が動く。</span>
+    </h1>
+    <p class="hero-sub">効果的なトレーニング設計と、食事・生活習慣への一貫したアドバイス。あなたの目標に、確実に届きます。</p>
+    <div class="hero-actions">
+      <a href="#booking" class="btn-primary" onclick="this.closest('section').nextElementSibling; document.getElementById('booking').scrollIntoView({behavior:'smooth'}); return false;">
+        無料体験を予約する
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="#programs" class="btn-secondary">プログラムを見る</a>
+    </div>
+  </div>
+  <div class="hero-scroll" aria-hidden="true">
+    <div class="scroll-track"><div class="scroll-fill"></div></div>
+    <div class="scroll-label">scroll</div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee-track">
+    <div class="marquee-item">Personal Training</div>
+    <div class="marquee-item accent">身体を変える</div>
+    <div class="marquee-item">Nutrition Coaching</div>
+    <div class="marquee-item">Individual Program</div>
+    <div class="marquee-item accent">完全個室</div>
+    <div class="marquee-item">Body Composition</div>
+    <div class="marquee-item">Lifestyle Support</div>
+    <div class="marquee-item accent">無料体験実施中</div>
+    <div class="marquee-item">Personal Training</div>
+    <div class="marquee-item accent">身体を変える</div>
+    <div class="marquee-item">Nutrition Coaching</div>
+    <div class="marquee-item">Individual Program</div>
+    <div class="marquee-item accent">完全個室</div>
+    <div class="marquee-item">Body Composition</div>
+    <div class="marquee-item">Lifestyle Support</div>
+    <div class="marquee-item accent">無料体験実施中</div>
+  </div>
+</div>
+
+<!-- METRICS -->
+<section id="metrics">
+  <div class="metric-cell reveal">
+    <div class="metric-num" data-target="500" data-suffix="+"><span>0</span></div>
+    <div class="metric-label">Total Members</div>
+    <div class="metric-sub">延べ指導人数</div>
+  </div>
+  <div class="metric-cell reveal d1">
+    <div class="metric-num" data-target="92" data-suffix="%"><span>0</span></div>
+    <div class="metric-label">Goal Achievement</div>
+    <div class="metric-sub">目標達成率</div>
+  </div>
+  <div class="metric-cell reveal d2">
+    <div class="metric-num" data-target="10" data-suffix="+"><span>0</span></div>
+    <div class="metric-label">Years Experience</div>
+    <div class="metric-sub">トレーナー経験年数</div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section id="philosophy">
+  <div class="reveal-l">
+    <div class="phil-label">Philosophy</div>
+    <h2 class="phil-h2">ゼロから<br>設計する。</h2>
+    <div class="phil-body">
+      <p>どんなに優れたプログラムも、あなたの身体でなければ意味がない。ZERO FITNESSでは、体組成測定・姿勢評価・動作分析から始め、データと対話を重ねて個別のプログラムを設計します。</p>
+      <p>トレーニングは、変化の始まりにすぎません。食事、睡眠、日常の動き方——168時間の生活全体を見直すことで、身体は確かに応えます。</p>
+    </div>
+  </div>
+  <div class="phil-visual reveal-r">
+    <div class="phil-visual-inner">
+      <!-- ↓ スタジオ・設備の写真がここに入ります -->
+      <div class="visual-placeholder">
+        <svg class="vp-icon" viewBox="0 0 48 48" fill="none" stroke="rgba(200,169,110,.3)" stroke-width="1">
+          <rect x="4" y="4" width="40" height="40" rx="2"/>
+          <circle cx="18" cy="20" r="6"/>
+          <path d="M4 40 L16 28 L24 34 L34 22 L44 32"/>
+        </svg>
+        <div class="vp-text">Studio Interior<br>Photography</div>
+      </div>
+    </div>
+    <div class="phil-visual-accent"></div>
+    <div class="phil-caption">Sakado Studio</div>
+  </div>
+</section>
+
+<!-- PROGRAMS -->
+<section id="programs">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-label">Programs</div>
+      <h2 class="section-title">目的から<br>設計する。</h2>
+    </div>
+  </div>
+  <div class="program-table">
+    <div class="prog-row reveal">
+      <div class="prog-index">01</div>
+      <div class="prog-main">
+        <div class="prog-name">Body Recomposition</div>
+        <div class="prog-desc">脂肪を減らし、筋肉を整え、理想のプロポーションへ。体組成データに基づいた最短経路を歩む。</div>
+        <div class="prog-tags">
+          <div class="prog-tag">Diet</div>
+          <div class="prog-tag">Body Make</div>
+          <div class="prog-tag">Nutrition</div>
+        </div>
+      </div>
+      <div class="prog-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </div>
+    </div>
+    <div class="prog-row reveal d1">
+      <div class="prog-index">02</div>
+      <div class="prog-main">
+        <div class="prog-name">Strength & Performance</div>
+        <div class="prog-desc">筋力・筋量・競技パフォーマンスの向上。ピリオダイゼーションに基づく、本物の強さを構築する。</div>
+        <div class="prog-tags">
+          <div class="prog-tag">Muscle</div>
+          <div class="prog-tag">Athletic</div>
+          <div class="prog-tag">Performance</div>
+        </div>
+      </div>
+      <div class="prog-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </div>
+    </div>
+    <div class="prog-row reveal d2">
+      <div class="prog-index">03</div>
+      <div class="prog-main">
+        <div class="prog-name">Functional Recovery</div>
+        <div class="prog-desc">姿勢改善、慢性的な腰痛・肩こりの根本からの解消。身体の機能を取り戻す。</div>
+        <div class="prog-tags">
+          <div class="prog-tag">Rehab</div>
+          <div class="prog-tag">Posture</div>
+          <div class="prog-tag">Mobility</div>
+        </div>
+      </div>
+      <div class="prog-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </div>
+    </div>
+    <div class="prog-row reveal d3">
+      <div class="prog-index">04</div>
+      <div class="prog-main">
+        <div class="prog-name">Event Preparation</div>
+        <div class="prog-desc">結婚式、成人式、大会——特別な日に向けた集中的なアプローチ。逆算設計と高密度サポート。</div>
+        <div class="prog-tags">
+          <div class="prog-tag">Wedding</div>
+          <div class="prog-tag">Competition</div>
+          <div class="prog-tag">Peak</div>
+        </div>
+      </div>
+      <div class="prog-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRAINER -->
+<section id="trainer">
+  <div class="trainer-header reveal">
+    <div class="section-label">Trainer</div>
+    <h2 class="section-title">指導者について</h2>
+  </div>
+  <div class="trainer-layout">
+    <div class="trainer-portrait reveal-l">
+      <div class="trainer-portrait-bg">
+        <!-- ↓ トレーナーの写真がここに入ります -->
+        <div class="portrait-placeholder">
+          <svg width="60" height="80" viewBox="0 0 60 80">
+            <circle cx="30" cy="22" r="14"/>
+            <path d="M2 72 C2 50 12 42 30 42 C48 42 58 50 58 72"/>
+          </svg>
+          <span>Trainer Portrait</span>
+        </div>
+      </div>
+      <div class="portrait-overlay">
+        <div class="portrait-name">田中 ◯◯</div>
+        <div class="portrait-title">Head Trainer</div>
+      </div>
+    </div>
+    <div class="trainer-story reveal-r">
+      <blockquote class="trainer-quote">「身体が変わると、自分への信頼が戻ってくる。それが、この仕事を続ける理由です。」</blockquote>
+      <div class="trainer-body">
+        <p>かつて自分自身が、変わることを諦めかけていた時期があります。何度も試み、何度も失敗した。その経験があるから、クライアントの「またダメかもしれない」という不安が手に取るようにわかります。</p>
+        <p>パーソナルトレーニングは、単なる運動指導ではありません。その人の生活を理解し、習慣を変え、自己効力感を育てていくプロセスです。10年以上の経験から確信しているのは、正しい方法で続ければ、身体は必ず応えるということ。</p>
+      </div>
+      <div class="trainer-creds">
+        <div class="cred-cell">
+          <div class="cred-label">Certification</div>
+          <div class="cred-val">NSCA-CPT</div>
+        </div>
+        <div class="cred-cell">
+          <div class="cred-label">Experience</div>
+          <div class="cred-val">10年以上</div>
+        </div>
+        <div class="cred-cell">
+          <div class="cred-label">Specialty</div>
+          <div class="cred-val">Body Recomp</div>
+        </div>
+        <div class="cred-cell">
+          <div class="cred-label">Clients</div>
+          <div class="cred-val">500名以上</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRANSFORMATIONS -->
+<section id="transformations">
+  <div class="section-header reveal" style="padding:0 0 0">
+    <div>
+      <div class="section-label">Member Stories</div>
+      <h2 class="section-title">変化の記録</h2>
+    </div>
+  </div>
+  <div class="trans-grid">
+    <div class="trans-card reveal">
+      <div class="trans-avatar">
+        <svg width="24" height="32" viewBox="0 0 24 32"><circle cx="12" cy="9" r="6"/><path d="M1 30 C1 20 5 17 12 17 C19 17 23 20 23 30" stroke-width="1"/></svg>
+      </div>
+      <div class="trans-name">Y.M さん — 34歳</div>
+      <div class="trans-period">入会3ヶ月</div>
+      <div class="trans-data">
+        <div class="trans-datum"><div class="datum-key">体重</div><div class="datum-val">− 8.2 kg</div></div>
+        <div class="trans-datum"><div class="datum-key">体脂肪率</div><div class="datum-val">− 5.3 %</div></div>
+        <div class="trans-datum"><div class="datum-key">ウエスト</div><div class="datum-val">− 9 cm</div></div>
+      </div>
+      <div class="trans-quote">「食べることを我慢しないプログラムで、初めて続けることができました。」</div>
+    </div>
+    <div class="trans-card reveal d1">
+      <div class="trans-avatar">
+        <svg width="24" height="32" viewBox="0 0 24 32"><circle cx="12" cy="9" r="6"/><path d="M1 30 C1 20 5 17 12 17 C19 17 23 20 23 30" stroke-width="1"/></svg>
+      </div>
+      <div class="trans-name">K.T さん — 42歳</div>
+      <div class="trans-period">入会2ヶ月</div>
+      <div class="trans-data">
+        <div class="trans-datum"><div class="datum-key">体重</div><div class="datum-val">− 6.5 kg</div></div>
+        <div class="trans-datum"><div class="datum-key">体脂肪率</div><div class="datum-val">− 4.1 %</div></div>
+        <div class="trans-datum"><div class="datum-key">腰痛</div><div class="datum-val">改善</div></div>
+      </div>
+      <div class="trans-quote">「40代でもこれだけ変われるとは思っていなかった。腰痛まで治ったのは驚きでした。」</div>
+    </div>
+    <div class="trans-card reveal d2">
+      <div class="trans-avatar">
+        <svg width="24" height="32" viewBox="0 0 24 32"><circle cx="12" cy="9" r="6"/><path d="M1 30 C1 20 5 17 12 17 C19 17 23 20 23 30" stroke-width="1"/></svg>
+      </div>
+      <div class="trans-name">R.S さん — 28歳</div>
+      <div class="trans-period">入会6ヶ月</div>
+      <div class="trans-data">
+        <div class="trans-datum"><div class="datum-key">体重</div><div class="datum-val">− 11 kg</div></div>
+        <div class="trans-datum"><div class="datum-key">筋肉量</div><div class="datum-val">+ 3.2 kg</div></div>
+        <div class="trans-datum"><div class="datum-key">仕事への集中力</div><div class="datum-val">向上</div></div>
+      </div>
+      <div class="trans-quote">「週2回のトレーニングが、今では生活の軸になっています。」</div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING (Step Form) -->
+<section id="booking">
+  <div class="booking-left">
+    <div class="section-label reveal">Free Trial</div>
+    <h2 class="booking-title reveal">まず、<br>体験してみる。</h2>
+    <p class="booking-lead reveal">カウンセリング・体組成測定・60分のトレーニング。すべて無料でご体験いただけます。その場での入会のお勧めは一切しません。</p>
+    <div class="booking-trust reveal">
+      <div class="trust-item"><div class="trust-dot"></div>完全個室・完全マンツーマン</div>
+      <div class="trust-item"><div class="trust-dot"></div>勧誘・即決プレッシャーなし</div>
+      <div class="trust-item"><div class="trust-dot"></div>体組成測定・カウンセリング込み</div>
+      <div class="trust-item"><div class="trust-dot"></div>当日キャンセルも対応</div>
+    </div>
+  </div>
+  <div class="booking-form reveal">
+    <div class="form-progress">
+      <div class="fp done" id="fp1"></div>
+      <div class="fp" id="fp2"></div>
+      <div class="fp" id="fp3"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="form-step active" id="s1">
+      <div class="step-counter">01 / 03</div>
+      <div class="step-q">目標を聞かせてください</div>
+      <div class="step-options">
+        <div class="step-option" onclick="pick(this)">
+          <div class="opt-radio"></div>
+          <div><div class="opt-text">ダイエット・体型を変えたい</div><div class="opt-sub">脂肪を減らし、理想のプロポーションへ</div></div>
+        </div>
+        <div class="step-option" onclick="pick(this)">
+          <div class="opt-radio"></div>
+          <div><div class="opt-text">筋力・筋肉をつけたい</div><div class="opt-sub">強くなる、あるいは競技パフォーマンスを上げる</div></div>
+        </div>
+        <div class="step-option" onclick="pick(this)">
+          <div class="opt-radio"></div>
+          <div><div class="opt-text">健康維持・身体の不調を改善したい</div><div class="opt-sub">腰痛・肩こり・機能改善・体力回復</div></div>
+        </div>
+        <div class="step-option" onclick="pick(this)">
+          <div class="opt-radio"></div>
+          <div><div class="opt-text">特別なイベントに向けて</div><div class="opt-sub">結婚式・成人式・大会など</div></div>
+        </div>
+      </div>
+      <div class="form-nav"><button class="form-next" onclick="next(1)">次へ</button></div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="form-step" id="s2">
+      <div class="step-counter">02 / 03</div>
+      <div class="step-q">運動の経験は？</div>
+      <div class="step-options">
+        <div class="step-option" onclick="pick(this)">
+          <div class="opt-radio"></div>
+          <div><div class="opt-text">ほぼ経験なし</div><div class="opt-sub">初めてでも、ゼロから丁寧に設計します</div></div>
+        </div>
+        <div class="step-option" onclick="pick(this)">
+          <div class="opt-radio"></div>
+          <div><div class="opt-text">過去に少しやっていた</div><div class="opt-sub">以前の経験を活かして再スタート</div></div>
+        </div>
+        <div class="step-option" onclick="pick(this)">
+          <div class="opt-radio"></div>
+          <div><div class="opt-text">定期的に運動している</div><div class="opt-sub">現状を分析して、さらに上を目指す</div></div>
+        </div>
+      </div>
+      <div class="form-nav">
+        <button class="form-back" onclick="back(2)">戻る</button>
+        <button class="form-next" onclick="next(2)">次へ</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="form-step" id="s3">
+      <div class="step-counter">03 / 03</div>
+      <div class="step-q">ご連絡先を入力してください</div>
+      <div class="form-field">
+        <label class="field-label">お名前</label>
+        <input class="field-input" type="text" placeholder="山田 太郎">
+      </div>
+      <div class="form-field">
+        <label class="field-label">電話番号</label>
+        <input class="field-input" type="tel" placeholder="090 · 0000 · 0000">
+      </div>
+      <div class="form-field">
+        <label class="field-label">希望日時（任意）</label>
+        <input class="field-input" type="text" placeholder="例：週末の午前中">
+      </div>
+      <div class="form-note">送信後、24時間以内にご連絡いたします。強引な勧誘は一切ありません。</div>
+      <div class="form-nav">
+        <button class="form-back" onclick="back(3)">戻る</button>
+        <button class="form-next final" onclick="submit()">予約を確定する</button>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="form-success" id="success">
+      <div class="success-icon">✓</div>
+      <div class="success-title">予約が完了しました</div>
+      <div class="success-body">ありがとうございます。<br>24時間以内にスタッフよりご連絡します。<br><br>変化の第一歩が、始まりました。</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-label">Pricing</div>
+      <h2 class="section-title">料金</h2>
+    </div>
+  </div>
+  <div class="price-grid">
+    <div class="price-col reveal">
+      <div class="price-plan">Light</div>
+      <div class="price-desc">週1回からはじめる。まず動く習慣をつくりたい方へ。</div>
+      <div class="price-amount">¥28,000</div>
+      <div class="price-period">/ 月（月4回）</div>
+      <ul class="price-features">
+        <li class="price-feature"><span class="feature-dot"></span>マンツーマン 60分 × 4回</li>
+        <li class="price-feature"><span class="feature-dot"></span>体組成測定</li>
+        <li class="price-feature"><span class="feature-dot"></span>食事アドバイス</li>
+        <li class="price-feature"><span class="feature-dot"></span>LINEサポート</li>
+      </ul>
+      <button class="price-cta" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">体験を予約する</button>
+    </div>
+    <div class="price-col featured reveal d1">
+      <div class="price-featured-label">Most Selected</div>
+      <div class="price-plan">Standard</div>
+      <div class="price-desc">週2回、着実に変わる。最も多くの方に選ばれているプランです。</div>
+      <div class="price-amount">¥48,000</div>
+      <div class="price-period">/ 月（月8回）</div>
+      <ul class="price-features">
+        <li class="price-feature"><span class="feature-dot"></span>マンツーマン 60分 × 8回</li>
+        <li class="price-feature"><span class="feature-dot"></span>体組成測定・姿勢分析</li>
+        <li class="price-feature"><span class="feature-dot"></span>食事管理サポート</li>
+        <li class="price-feature"><span class="feature-dot"></span>LINEサポート（24h対応）</li>
+        <li class="price-feature"><span class="feature-dot"></span>自主トレーニング動画提供</li>
+      </ul>
+      <button class="price-cta" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">体験を予約する</button>
+    </div>
+    <div class="price-col reveal d2">
+      <div class="price-plan">Premium</div>
+      <div class="price-desc">週4回の集中設計。短期間で圧倒的な変化を求める方へ。</div>
+      <div class="price-amount">¥88,000</div>
+      <div class="price-period">/ 月（月16回）</div>
+      <ul class="price-features">
+        <li class="price-feature"><span class="feature-dot"></span>マンツーマン 60分 × 16回</li>
+        <li class="price-feature"><span class="feature-dot"></span>全測定・詳細分析</li>
+        <li class="price-feature"><span class="feature-dot"></span>食事メニュー設計</li>
+        <li class="price-feature"><span class="feature-dot"></span>専任トレーナー制</li>
+        <li class="price-feature"><span class="feature-dot"></span>ホームワークプログラム</li>
+      </ul>
+      <button class="price-cta" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">体験を予約する</button>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-header reveal" style="padding:0 0 0">
+    <div>
+      <div class="section-label">FAQ</div>
+      <h2 class="section-title">よくある質問</h2>
+    </div>
+  </div>
+  <div class="faq-layout">
+    <div class="faq-intro reveal-l">
+      体験前に気になることを、正直にお答えします。ここに答えがなければ、電話かLINEでいつでも聞いてください。
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-trigger" onclick="toggleFaq(this)">
+          <span class="faq-q">運動が全くの初心者ですが、大丈夫でしょうか？</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-a-inner">問題ありません。会員の約40%が運動未経験からのスタートです。初回カウンセリングで現在の体力・生活習慣・目標を丁寧に聞いた上で、ゼロから設計します。「怖い」「何をすればいいかわからない」という方こそ、マンツーマン指導が向いています。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-trigger" onclick="toggleFaq(this)">
+          <span class="faq-q">食事制限が苦手です。我慢が続かない気がします。</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-a-inner">「食べながら変わる」アプローチを基本としています。厳しいカロリー制限ではなく、食事の質・タイミング・バランスの調整を中心に行います。外食や飲み会の対応策も一緒に考えますので、我慢ではなく「選ぶ力」を育てる感覚で取り組めます。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-trigger" onclick="toggleFaq(this)">
+          <span class="faq-q">体験後に強引な勧誘はありますか？</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-a-inner">一切ありません。体験後にプランのご案内はしますが、その場での決断を求めることはしません。ゆっくり検討してください。「ここで続けたい」と思えた方とのみ、ご縁をいただきたいと考えています。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-trigger" onclick="toggleFaq(this)">
+          <span class="faq-q">週1回しか来られませんが、効果は出ますか？</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-a-inner">出ます。トレーニングは週数時間ですが、残りの168時間の過ごし方が変化の大半を決めます。食事・睡眠・日常動作まで一緒に見直すので、スタジオ外でも変化は進んでいます。LINEで随時サポートします。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-trigger" onclick="toggleFaq(this)">
+          <span class="faq-q">持ち物はなにが必要ですか？</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer"><div class="faq-a-inner">動きやすい服装とタオル、飲み物があれば十分です。ウェアのレンタル（無料）もご用意しています。シャワーも完備していますので、仕事帰りにそのままお越しいただけます。</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACCESS -->
+<section id="access">
+  <div class="section-header reveal" style="padding:0 0 0">
+    <div>
+      <div class="section-label">Access</div>
+      <h2 class="section-title">スタジオへ</h2>
+    </div>
+  </div>
+  <div class="access-layout">
+    <div class="access-info">
+      <div class="access-row reveal">
+        <div class="access-label">Address</div>
+        <div class="access-val">〒000-0000<br>埼玉県○○市○○1-2-3<br>○○ビル 3F</div>
+      </div>
+      <div class="access-row reveal d1">
+        <div class="access-label">Hours</div>
+        <div class="access-val">平日 10:00 — 21:00<br>土日祝 10:00 — 19:00</div>
+      </div>
+      <div class="access-row reveal d2">
+        <div class="access-label">Contact</div>
+        <div class="access-val">
+          <a href="tel:000-0000-0000">000 · 0000 · 0000</a>
+        </div>
+      </div>
+      <div class="access-row reveal d3">
+        <div class="access-label">Nearest Station</div>
+        <div class="access-val">○○駅 徒歩3分</div>
+      </div>
+    </div>
+    <div class="access-map reveal-r">
+      <!-- ↓ Google Map がここに入ります -->
+      <svg width="36" height="36" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke-width="1"/><circle cx="12" cy="10" r="3" stroke-width="1"/></svg>
+      <p>Map — ここに地図が入ります</p>
+    </div>
+  </div>
+</section>
+
+<!-- FINALE -->
+<section id="finale">
+  <div class="finale-bg"></div>
+  <div class="finale-content reveal">
+    <div class="finale-eyebrow">Free Trial</div>
+    <h2 class="finale-h">まず、<br><span class="accent">動いてみる。</span></h2>
+    <p class="finale-sub">体験セッションは無料です。カウンセリングと60分のトレーニングで、身体の現在地を知ることから始めましょう。</p>
+    <div class="finale-actions">
+      <button class="btn-primary" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">
+        無料体験を予約する
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+      <a href="tel:000-0000-0000" class="btn-secondary">電話で問い合わせる</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">ZERO<span> FITNESS</span></div>
+  <div class="footer-copy">© 2025 Zero Fitness & Personal. All rights reserved.</div>
+</footer>
+
+<!-- STICKY BAR -->
+<div id="sticky">
+  <div class="sticky-text">
+    <div class="sticky-title">無料体験セッション</div>
+    <div class="sticky-sub">カウンセリング + 60分 — 完全無料</div>
+  </div>
+  <button class="sticky-btn" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">予約する</button>
+</div>
+
+<script>
+/* ── Cursor ── */
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+if(cur){
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX; my=e.clientY;
+    cur.style.left=mx+'px'; cur.style.top=my+'px';
+  });
+  setInterval(()=>{
+    rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  },16);
+  document.querySelectorAll('button,a,.prog-row,.step-option,.faq-trigger').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';});
+    el.addEventListener('mouseleave',()=>{cur.style.width='8px';cur.style.height='8px';});
+  });
+}
+
+/* ── Nav ── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('scrolled', scrollY > 60);
+  document.getElementById('sticky').classList.toggle('show', scrollY > window.innerHeight * .6);
+},{passive:true});
+
+/* ── Reveal on scroll ── */
+const ro = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); }});
+},{threshold:.08});
+document.querySelectorAll('.reveal,.reveal-l,.reveal-r').forEach(el=>ro.observe(el));
+
+/* ── Counters ── */
+function animCount(el){
+  const target=+el.dataset.target, suf=el.dataset.suffix||'';
+  const span=el.querySelector('span'); if(!span)return;
+  const dur=1800,step=16,inc=target/(dur/step);
+  let c=0;
+  const t=setInterval(()=>{
+    c=Math.min(c+inc,target);
+    span.textContent=Math.floor(c)+suf;
+    if(c>=target)clearInterval(t);
+  },step);
+}
+new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('[data-target]').forEach(animCount);
+      cntObs.unobserve(e.target);
+    }
+  });
+},{threshold:.3}).observe(document.getElementById('metrics'));
+const cntObs={unobserve:()=>{}};
+
+/* ── FAQ ── */
+function toggleFaq(btn){
+  const item=btn.closest('.faq-item');
+  const open=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!open) item.classList.add('open');
+}
+
+/* ── Step Form ── */
+let step=1;
+function pick(el){
+  el.closest('.step-options').querySelectorAll('.step-option').forEach(o=>o.classList.remove('chosen'));
+  el.classList.add('chosen');
+}
+function updateBar(){
+  [1,2,3].forEach(i=>document.getElementById('fp'+i).classList.toggle('done',i<=step));
+}
+function next(from){
+  if(from<3){
+    document.getElementById('s'+from).classList.remove('active');
+    step=from+1;
+    document.getElementById('s'+step).classList.add('active');
+    updateBar();
+  }
+}
+function back(from){
+  if(from>1){
+    document.getElementById('s'+from).classList.remove('active');
+    step=from-1;
+    document.getElementById('s'+step).classList.add('active');
+    updateBar();
+  }
+}
+function submit(){
+  document.getElementById('s3').classList.remove('active');
+  document.getElementById('success').classList.add('show');
+  [1,2,3].forEach(i=>document.getElementById('fp'+i).classList.add('done'));
+}
+</script>
+</body>
+</html>
