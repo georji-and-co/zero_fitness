@@ -18,10 +18,8 @@
   --white:  #f2ede8;
   --dim:    rgba(242,237,232,.45);
   --dimmer: rgba(242,237,232,.25);
-  /* Accent (sapphire blue) */
-  --accent: #4a9fff;
-  --accent2:#2f7fe6;
-  --accent-rgb: 74,159,255;
+  --accent: #c8a96e;        /* warm gold — not neon */
+  --accent2:#b5933a;
   --serif:  'Bebas Neue', sans-serif;
   --mono:   'Inter Tight', sans-serif;
   --jp:     'Noto Sans JP', sans-serif;
@@ -56,7 +54,7 @@ button { cursor:none; font-family:inherit; }
 #cursor-ring {
   position:fixed; z-index:9998; pointer-events:none;
   width:36px; height:36px; border-radius:50%;
-  border:1px solid rgba(var(--accent-rgb),.4);
+  border:1px solid rgba(200,169,110,.4);
   transform:translate(-50%,-50%);
   transition:width .5s var(--ease), height .5s var(--ease), transform .12s var(--ease2), opacity .3s;
 }
@@ -140,76 +138,33 @@ body:hover #cursor { opacity:1; }
   overflow:hidden;
 }
 
-/* Cinematic background */
-.hero-bg {
-  position:absolute; inset:0;
-  background:
-    linear-gradient(160deg, rgba(10,9,8,0) 0%, rgba(10,9,8,.85) 100%),
-    linear-gradient(to top, rgba(10,9,8,1) 0%, rgba(10,9,8,.4) 35%, rgba(10,9,8,.1) 100%);
-  z-index:1;
-}
-
-/* Replaced by a deep photographic atmosphere using CSS */
-.hero-visual {
+/* Full-bleed photo background */
+.hero-photo-bg {
   position:absolute; inset:0; z-index:0;
-  background:
-    radial-gradient(ellipse 80% 60% at 70% 40%, rgba(45,35,20,.8) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(20,15,8,.9) 0%, transparent 60%),
-    linear-gradient(135deg, #0a0908 0%, #1a1510 40%, #0f0c08 100%);
-  overflow:hidden;
 }
-
-/* Photographic placeholder frame */
-.hero-photo-area {
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:flex-end;
-}
-.hero-photo-frame {
-  position:absolute;
-  right:0; top:0; bottom:0;
-  width:65%;
-  overflow:hidden;
-}
-.hero-photo-inner {
+.hero-photo-bg img {
   width:100%; height:100%;
-  background:
-    linear-gradient(to bottom, rgba(10,9,8,.3) 0%, transparent 30%, transparent 70%, rgba(10,9,8,.8) 100%),
-    linear-gradient(to left, transparent 60%, rgba(10,9,8,.9) 100%);
-  display:flex; align-items:center; justify-content:center;
-  flex-direction:column; gap:10px;
+  object-fit:cover; object-position:center 20%;
+  display:block;
 }
-.photo-hint {
-  display:flex; flex-direction:column; align-items:center; gap:8px;
-}
-.photo-hint-line {
-  width:1px; height:60px;
-  background:linear-gradient(to bottom, transparent, var(--accent), transparent);
-}
-.photo-hint-text {
-  font-family:var(--mono);
-  font-size:9px; letter-spacing:.2em; color:rgba(var(--accent-rgb),.35);
-  text-transform:uppercase; writing-mode:vertical-rl;
+.hero-photo-fallback {
+  position:absolute; inset:0;
+  background:linear-gradient(135deg, #0a0908 0%, #1a1510 50%, #0a0908 100%);
 }
 
-/* Atmosphere shapes */
-.atmo {
-  position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none;
-}
-.atmo-1 {
-  width:500px; height:500px;
-  background:rgba(var(--accent-rgb),.06);
-  top:-10%; right:10%;
-  animation:atmoFloat 18s ease-in-out infinite;
-}
-.atmo-2 {
-  width:300px; height:300px;
-  background:rgba(var(--accent-rgb),.04);
-  bottom:10%; right:30%;
-  animation:atmoFloat 24s ease-in-out infinite reverse;
-}
-@keyframes atmoFloat {
-  0%,100%{transform:translate(0,0) scale(1)}
-  50%{transform:translate(20px,-30px) scale(1.05)}
+/* Cinematic overlay */
+.hero-bg {
+  position:absolute; inset:0; z-index:1;
+  background:
+    linear-gradient(to top,
+      rgba(8,8,8,1)   0%,
+      rgba(8,8,8,.75) 30%,
+      rgba(8,8,8,.3)  60%,
+      rgba(8,8,8,.05) 100%),
+    linear-gradient(to right,
+      rgba(8,8,8,.65) 0%,
+      rgba(8,8,8,.1)  50%,
+      rgba(8,8,8,0)   100%);
 }
 
 .hero-content {
@@ -235,26 +190,20 @@ body:hover #cursor { opacity:1; }
 
 .hero-h1 {
   font-family:var(--serif);
-  font-size:clamp(68px, 12vw, 120px);
-  /* Avoid Japanese glyphs getting clipped by tight line-height + overflow */
-  line-height:.96;
+  font-size:clamp(52px, 8.5vw, 110px);
+  line-height:1.0;
   letter-spacing:.02em;
   margin-bottom:36px;
-  overflow:hidden;
-  padding-top:.14em;
-  padding-bottom:.06em;
-  text-shadow:0 28px 70px rgba(var(--accent-rgb),.08);
+  white-space:nowrap;
 }
 .hero-h1-line {
   display:block;
   opacity:0;
-  transform:translateY(100%);
+  transform:translateY(28px);
   animation:lineReveal .9s var(--ease) forwards;
-  will-change:transform;
 }
 .hero-h1-line:nth-child(1) { animation-delay:.4s }
-.hero-h1-line:nth-child(2) { animation-delay:.55s }
-.hero-h1-line:nth-child(3) { animation-delay:.7s; color:var(--accent); }
+.hero-h1-line:nth-child(2) { animation-delay:.55s; color:var(--accent); }
 
 .hero-sub {
   font-family:var(--jp);
@@ -421,8 +370,8 @@ body:hover #cursor { opacity:1; }
 .phil-visual-inner {
   position:absolute; inset:0;
   background:
-    linear-gradient(135deg, rgba(var(--accent-rgb),.04) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 70% at 60% 40%, rgba(var(--accent-rgb),.06) 0%, transparent 70%),
+    linear-gradient(135deg, rgba(200,169,110,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 70% at 60% 40%, rgba(200,169,110,.06) 0%, transparent 70%),
     var(--ink3);
   display:flex; align-items:center; justify-content:center;
 }
@@ -432,7 +381,7 @@ body:hover #cursor { opacity:1; }
 .vp-icon { width:48px; height:48px; }
 .vp-text {
   font-family:var(--mono); font-size:9px; letter-spacing:.2em;
-  color:rgba(var(--accent-rgb),.3); text-transform:uppercase; text-align:center;
+  color:rgba(200,169,110,.3); text-transform:uppercase; text-align:center;
 }
 .phil-visual-accent {
   position:absolute; bottom:0; left:0; right:0;
@@ -502,11 +451,11 @@ body:hover #cursor { opacity:1; }
 .prog-index {
   font-family:var(--serif);
   font-size:40px; line-height:1;
-  color:rgba(var(--accent-rgb),.2);
+  color:rgba(200,169,110,.2);
   position:relative; z-index:1;
   transition:color .3s;
 }
-.prog-row:hover .prog-index { color:rgba(var(--accent-rgb),.5); }
+.prog-row:hover .prog-index { color:rgba(200,169,110,.5); }
 .prog-main { position:relative; z-index:1; }
 .prog-name {
   font-family:var(--mono); font-size:18px; font-weight:400;
@@ -566,7 +515,7 @@ body:hover #cursor { opacity:1; }
 .trainer-portrait-bg {
   position:absolute; inset:0;
   background:
-    radial-gradient(ellipse 60% 80% at 50% 30%, rgba(var(--accent-rgb),.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 80% at 50% 30%, rgba(200,169,110,.07) 0%, transparent 70%),
     var(--ink3);
   display:flex; align-items:center; justify-content:center;
 }
@@ -739,7 +688,7 @@ body:hover #cursor { opacity:1; }
   cursor:none;
 }
 .step-option:hover { border-color:var(--fog2); background:var(--ink3); }
-.step-option.chosen { border-color:var(--accent); background:rgba(var(--accent-rgb),.05); }
+.step-option.chosen { border-color:var(--accent); background:rgba(200,169,110,.05); }
 .opt-radio {
   width:16px; height:16px; border-radius:50%;
   border:1.5px solid var(--dim); flex-shrink:0;
@@ -935,7 +884,7 @@ body:hover #cursor { opacity:1; }
   display:flex; align-items:center; justify-content:center;
   aspect-ratio:16/10; flex-direction:column; gap:10px;
 }
-.access-map svg { stroke:rgba(var(--accent-rgb),.3); fill:none; }
+.access-map svg { stroke:rgba(200,169,110,.3); fill:none; }
 .access-map p {
   font-family:var(--mono); font-size:9px; font-weight:300;
   letter-spacing:.18em; text-transform:uppercase; color:var(--dimmer);
@@ -951,7 +900,7 @@ body:hover #cursor { opacity:1; }
 .finale-bg {
   position:absolute; inset:0;
   background:
-    radial-gradient(ellipse 60% 60% at 50% 50%, rgba(var(--accent-rgb),.06) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 60% at 50% 50%, rgba(200,169,110,.06) 0%, transparent 70%),
     var(--ink);
 }
 .finale-content { position:relative; z-index:1; }
@@ -1102,33 +1051,26 @@ footer {
 
 <!-- HERO -->
 <section id="hero">
-  <div class="hero-visual">
-    <div class="atmo atmo-1"></div>
-    <div class="atmo atmo-2"></div>
-    <div class="hero-photo-area">
-      <div class="hero-photo-frame">
-        <div class="hero-photo-inner">
-          <!-- ↓ ここに高品質なトレーニング写真が入ります -->
-          <div class="photo-hint">
-            <div class="photo-hint-line"></div>
-            <div class="photo-hint-text">Photo — Trainer in Studio</div>
-            <div class="photo-hint-line"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="hero-photo-bg">
+    <!-- ジムトレーニング・暗めのムード写真 -->
+    <img
+      src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1800&q=85&auto=format&fit=crop"
+      alt="トレーニング"
+      loading="eager"
+    >
+    <div class="hero-photo-fallback"></div>
   </div>
   <div class="hero-bg"></div>
+
   <div class="hero-content">
     <div class="hero-eyebrow">Personal Training Studio</div>
     <h1 class="hero-h1">
-      <span class="hero-h1-line">身体を</span>
-      <span class="hero-h1-line">変える。</span>
+      <span class="hero-h1-line">身体を変える。</span>
       <span class="hero-h1-line">人生が動く。</span>
     </h1>
     <p class="hero-sub">効果的なトレーニング設計と、食事・生活習慣への一貫したアドバイス。あなたの目標に、確実に届きます。</p>
     <div class="hero-actions">
-      <a href="#booking" class="btn-primary" onclick="this.closest('section').nextElementSibling; document.getElementById('booking').scrollIntoView({behavior:'smooth'}); return false;">
+      <a href="#booking" class="btn-primary" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'}); return false;">
         無料体験を予約する
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </a>
@@ -1196,7 +1138,7 @@ footer {
     <div class="phil-visual-inner">
       <!-- ↓ スタジオ・設備の写真がここに入ります -->
       <div class="visual-placeholder">
-        <svg class="vp-icon" viewBox="0 0 48 48" fill="none" stroke="rgba(var(--accent-rgb),.3)" stroke-width="1">
+        <svg class="vp-icon" viewBox="0 0 48 48" fill="none" stroke="rgba(200,169,110,.3)" stroke-width="1">
           <rect x="4" y="4" width="40" height="40" rx="2"/>
           <circle cx="18" cy="20" r="6"/>
           <path d="M4 40 L16 28 L24 34 L34 22 L44 32"/>
