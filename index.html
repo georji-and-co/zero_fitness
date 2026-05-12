@@ -18,8 +18,10 @@
   --white:  #f2ede8;
   --dim:    rgba(242,237,232,.45);
   --dimmer: rgba(242,237,232,.25);
-  --accent: #c8a96e;        /* warm gold — not neon */
-  --accent2:#b5933a;
+  /* Accent (sapphire blue) */
+  --accent: #4a9fff;
+  --accent2:#2f7fe6;
+  --accent-rgb: 74,159,255;
   --serif:  'Bebas Neue', sans-serif;
   --mono:   'Inter Tight', sans-serif;
   --jp:     'Noto Sans JP', sans-serif;
@@ -54,7 +56,7 @@ button { cursor:none; font-family:inherit; }
 #cursor-ring {
   position:fixed; z-index:9998; pointer-events:none;
   width:36px; height:36px; border-radius:50%;
-  border:1px solid rgba(200,169,110,.4);
+  border:1px solid rgba(var(--accent-rgb),.4);
   transform:translate(-50%,-50%);
   transition:width .5s var(--ease), height .5s var(--ease), transform .12s var(--ease2), opacity .3s;
 }
@@ -185,7 +187,7 @@ body:hover #cursor { opacity:1; }
 }
 .photo-hint-text {
   font-family:var(--mono);
-  font-size:9px; letter-spacing:.2em; color:rgba(200,169,110,.35);
+  font-size:9px; letter-spacing:.2em; color:rgba(var(--accent-rgb),.35);
   text-transform:uppercase; writing-mode:vertical-rl;
 }
 
@@ -195,13 +197,13 @@ body:hover #cursor { opacity:1; }
 }
 .atmo-1 {
   width:500px; height:500px;
-  background:rgba(200,169,110,.06);
+  background:rgba(var(--accent-rgb),.06);
   top:-10%; right:10%;
   animation:atmoFloat 18s ease-in-out infinite;
 }
 .atmo-2 {
   width:300px; height:300px;
-  background:rgba(200,169,110,.04);
+  background:rgba(var(--accent-rgb),.04);
   bottom:10%; right:30%;
   animation:atmoFloat 24s ease-in-out infinite reverse;
 }
@@ -241,7 +243,7 @@ body:hover #cursor { opacity:1; }
   overflow:hidden;
   padding-top:.14em;
   padding-bottom:.06em;
-  text-shadow:0 28px 70px rgba(200,169,110,.08);
+  text-shadow:0 28px 70px rgba(var(--accent-rgb),.08);
 }
 .hero-h1-line {
   display:block;
@@ -419,8 +421,8 @@ body:hover #cursor { opacity:1; }
 .phil-visual-inner {
   position:absolute; inset:0;
   background:
-    linear-gradient(135deg, rgba(200,169,110,.04) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 70% at 60% 40%, rgba(200,169,110,.06) 0%, transparent 70%),
+    linear-gradient(135deg, rgba(var(--accent-rgb),.04) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 70% at 60% 40%, rgba(var(--accent-rgb),.06) 0%, transparent 70%),
     var(--ink3);
   display:flex; align-items:center; justify-content:center;
 }
@@ -430,7 +432,7 @@ body:hover #cursor { opacity:1; }
 .vp-icon { width:48px; height:48px; }
 .vp-text {
   font-family:var(--mono); font-size:9px; letter-spacing:.2em;
-  color:rgba(200,169,110,.3); text-transform:uppercase; text-align:center;
+  color:rgba(var(--accent-rgb),.3); text-transform:uppercase; text-align:center;
 }
 .phil-visual-accent {
   position:absolute; bottom:0; left:0; right:0;
@@ -500,11 +502,11 @@ body:hover #cursor { opacity:1; }
 .prog-index {
   font-family:var(--serif);
   font-size:40px; line-height:1;
-  color:rgba(200,169,110,.2);
+  color:rgba(var(--accent-rgb),.2);
   position:relative; z-index:1;
   transition:color .3s;
 }
-.prog-row:hover .prog-index { color:rgba(200,169,110,.5); }
+.prog-row:hover .prog-index { color:rgba(var(--accent-rgb),.5); }
 .prog-main { position:relative; z-index:1; }
 .prog-name {
   font-family:var(--mono); font-size:18px; font-weight:400;
@@ -564,7 +566,7 @@ body:hover #cursor { opacity:1; }
 .trainer-portrait-bg {
   position:absolute; inset:0;
   background:
-    radial-gradient(ellipse 60% 80% at 50% 30%, rgba(200,169,110,.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 80% at 50% 30%, rgba(var(--accent-rgb),.07) 0%, transparent 70%),
     var(--ink3);
   display:flex; align-items:center; justify-content:center;
 }
@@ -737,7 +739,7 @@ body:hover #cursor { opacity:1; }
   cursor:none;
 }
 .step-option:hover { border-color:var(--fog2); background:var(--ink3); }
-.step-option.chosen { border-color:var(--accent); background:rgba(200,169,110,.05); }
+.step-option.chosen { border-color:var(--accent); background:rgba(var(--accent-rgb),.05); }
 .opt-radio {
   width:16px; height:16px; border-radius:50%;
   border:1.5px solid var(--dim); flex-shrink:0;
@@ -933,7 +935,7 @@ body:hover #cursor { opacity:1; }
   display:flex; align-items:center; justify-content:center;
   aspect-ratio:16/10; flex-direction:column; gap:10px;
 }
-.access-map svg { stroke:rgba(200,169,110,.3); fill:none; }
+.access-map svg { stroke:rgba(var(--accent-rgb),.3); fill:none; }
 .access-map p {
   font-family:var(--mono); font-size:9px; font-weight:300;
   letter-spacing:.18em; text-transform:uppercase; color:var(--dimmer);
@@ -949,7 +951,7 @@ body:hover #cursor { opacity:1; }
 .finale-bg {
   position:absolute; inset:0;
   background:
-    radial-gradient(ellipse 60% 60% at 50% 50%, rgba(200,169,110,.06) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 60% at 50% 50%, rgba(var(--accent-rgb),.06) 0%, transparent 70%),
     var(--ink);
 }
 .finale-content { position:relative; z-index:1; }
@@ -1194,7 +1196,7 @@ footer {
     <div class="phil-visual-inner">
       <!-- ↓ スタジオ・設備の写真がここに入ります -->
       <div class="visual-placeholder">
-        <svg class="vp-icon" viewBox="0 0 48 48" fill="none" stroke="rgba(200,169,110,.3)" stroke-width="1">
+        <svg class="vp-icon" viewBox="0 0 48 48" fill="none" stroke="rgba(var(--accent-rgb),.3)" stroke-width="1">
           <rect x="4" y="4" width="40" height="40" rx="2"/>
           <circle cx="18" cy="20" r="6"/>
           <path d="M4 40 L16 28 L24 34 L34 22 L44 32"/>
